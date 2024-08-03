@@ -33,16 +33,36 @@ public class SimpleWordListHashMap implements WordList {
     @Override
     public Set<String> allValidWords(String tileRack) {
         Set<String> validWords = new HashSet<>();
-        Permutation rackPermutation = new Permutation(tileRack);
+        Set<String> subsets = generateSubsets(tileRack);
 
-        for (Map.Entry<String, Set<String>> entry : wordMap.entrySet()) {
-            Permutation wordPermutation = new Permutation(entry.getKey());
-            if (rackPermutation.equals(wordPermutation)) {
-                validWords.addAll(entry.getValue());
+        System.out.println("Tile rack: " + tileRack);
+        System.out.println("Generated subsets: " + subsets);
+
+        for (String subset : subsets) {
+            String normalizedSubset = new Permutation(subset).getNormalized();
+            if (wordMap.containsKey(normalizedSubset)) {
+                validWords.addAll(wordMap.get(normalizedSubset));
             }
         }
 
+        System.out.println("Valid words: " + validWords);
         return validWords;
+    }
+
+    private Set<String> generateSubsets(String tileRack) {
+        Set<String> subsets = new HashSet<>();
+        generateSubsets("", tileRack, subsets);
+        return subsets;
+    }
+
+    private void generateSubsets(String prefix, String remaining, Set<String> result) {
+        if (!remaining.isEmpty()) {
+            generateSubsets(prefix + remaining.charAt(0), remaining.substring(1), result);
+            generateSubsets(prefix, remaining.substring(1), result);
+        }
+        if (!prefix.isEmpty()) {
+            result.add(prefix);
+        }
     }
 
     @Override
@@ -62,7 +82,8 @@ public class SimpleWordListHashMap implements WordList {
 
     @Override
     public boolean contains(String word) {
-        return false;
+        String normalized = new Permutation(word).getNormalized();
+        return wordMap.containsKey(normalized) && wordMap.get(normalized).contains(word);
     }
 
     @Override

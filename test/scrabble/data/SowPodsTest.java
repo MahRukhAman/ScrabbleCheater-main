@@ -2,24 +2,17 @@ package scrabble.data;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.*;
 
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-
 public class SowPodsTest {
 	public static Collection<Object[]> data() {
-		Object[][] data = new Object[][] {
-				{"querdze", new String[] {}, new String[] { "rud", "deer", "de", "dree", "rede", "queer", "rue", "dee", "red", "ree", "rued", "zed", "ere", "dere", "zee", "ur", "ed", "ee", "urdee", "ered", "urd", "rez", "reed", "urde", "ure", "dure", "er", "rude", "re", "due" } },
-				{"gustable", new String[] { "gustable" }, new String[] { "tub", "aglu", "glue", "blagues",
+		Object[][] data = new Object[][]{
+				{"querdze", new String[]{}, new String[]{"rud", "deer", "de", "dree", "rede", "queer", "rue", "dee", "red", "ree", "rued", "zed", "ere", "dere", "zee", "ur", "ed", "ee", "urdee", "ered", "urd", "rez", "reed", "urde", "ure", "dure", "er", "rude", "re", "due"}},
+				{"gustable", new String[]{"gustable"}, new String[]{"tub", "aglu", "glue", "blagues",
 						"lugs", "tug", "beaus", "slae", "beaut", "bag",
 						"lea", "slag", "seta", "bal", "ates", "tsuba",
 						"leg", "slab", "bates", "tea", "gulas",
@@ -86,61 +79,34 @@ public class SowPodsTest {
 						"blague", "bust", "ables", "guts", "beta",
 						"blag", "ablet", "sal", "bulges", "tael",
 						"gale", "sau", "sat", "buat", "gets", "taes",
-						"stable", "geta", "taus", "lug", "gust" } },
-				{"siszymo", new String[] { "zymosis" },
-						new String[] { "ism", "mossy", "iso", "moi", "ios", "moys", "mos", "som", "sos", "moy", "yom", "yo", "moz", "soy", "yos", "mi", "sizy", "mo", "io", "is", "my", "moss", "zo", "soms", "somy", "isos", "soys", "zoism", "oys", "sims", "misos", "miso", "missy", "miss", "oms", "si", "mis", "sim", "oi", "sis", "so", "om", "zos", "miz", "isms", "os", "myosis", "oy", "zoisms", "zymosis" } } };
+						"stable", "geta", "taus", "lug", "gust"}},
+				{"siszymo", new String[]{"zymosis"},
+						new String[]{"ism", "mossy", "iso", "moi", "ios", "moys", "mos", "som", "sos", "moy", "yom", "yo", "moz", "soy", "yos", "mi", "sizy", "mo", "io", "is", "my", "moss", "zo", "soms", "somy", "isos", "soys", "zoism", "oys", "sims", "misos", "miso", "missy", "miss", "oms", "si", "mis", "sim", "oi", "sis", "so", "om", "zos", "miz", "isms", "os", "myosis", "oy", "zoisms", "zymosis"}}};
 		return Arrays.asList(data);
 	}
 
-	String tileRack;
-	String[] validSuggestions;
-    String[] permutations;
 	static WordList wl;
-
-	public SowPodsTest(String tileRack, String[] permutations,
-			String[] validSuggestions) {
-		this.validSuggestions = validSuggestions;
-		this.permutations = permutations;
-		this.tileRack = tileRack;
-	}
 
 	@BeforeAll
 	public static void createWordList() {
-		wl = new SimpleWordList().initFromFile("wordlists/sowpods.txt");
+		wl = new OwnHashWordList().initFromFile("wordlists/sowpods.txt");
 	}
 
-	// Parameterized test for sizeShouldGiveTotalNumberOfStoredWords
 	@ParameterizedTest
 	@MethodSource("data")
 	public void sizeShouldGiveTotalNumberOfStoredWords(String tileRack, String[] permutations,
 													   String[] validSuggestions) {
-        this.tileRack = tileRack;
-        this.permutations = permutations;
-        this.validSuggestions = validSuggestions;
-        assertEquals(267751, wl.size(), tileRack);
-	}
-
-	// Ignore
-	public void shouldReturnCorrectPermutations(String tileRack, String[] permutations,
-												String[] validSuggestions) {
-		Set<String> actual = wl.validWordsUsingAllTiles(tileRack);
-		// assertEquals(message, permutations.length, actual.size());
-		List<Integer> permutationsList =
-				Arrays.stream(permutations).map(i->new Integer(i)).collect(Collectors.toList());
-		;
-		assertEquals( new HashSet<String>(permutationsList.size()),
-				actual, tileRack);
+		assertEquals(267751, wl.size(), tileRack);
 	}
 	/**
 	 * This is Part of the Deluxe Version
 	 */
 	//@Ignore
-	public void shouldReturnCorrectSuggestions() {
+	@ParameterizedTest
+	@MethodSource("data")
+	public void shouldReturnCorrectSuggestions(String tileRack, String[] permutations,
+											   String[] validSuggestions) {
 		Set<String> actual = wl.allValidWords(tileRack);
-		// assertEquals(message, validSuggestions.length,
-		// wl.words(tileRack).size());
-		assertEquals(
-				new HashSet<String>(Arrays.asList(validSuggestions)), actual, tileRack);
+		assertEquals(new HashSet<>(Arrays.asList(validSuggestions)), actual, tileRack);
 	}
-
 }
